@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v4.1.7
         with:
           sparse-checkout: |
-            CODING/FE
+            CODING/FE/*
       - name: Output information
         run: ls
       - name: Cache deps

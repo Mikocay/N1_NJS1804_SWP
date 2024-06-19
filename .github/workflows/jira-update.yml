@@ -1,0 +1,49 @@
+name: Update test case status to Jira
+on:
+  push:
+    branches:
+      - main
+env:
+  CACHE_KEY: node-deps
+  JIRA_BASE_URL: https://huynh-thong-duong-se183537.net
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.7
+      - name: Move to the FE test directory
+        run: cd CODING/FE
+      - name: Cache deps
+        id: cache
+        uses: actions/cache@v4.0.2
+        with:
+          key: node_modules
+          path: ${{ env.CACHE_KEY }}-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Test
+        run: npm run test
+      - name: Extract Jira Issue Key from Commit Message
+        id: extract
+        run: |
+          echo "Commit message: $commit_message" 
+          if [[ "$commit_message" =~ ([A-Z]+-[0-9]+) ]];
+          then
+            echo "Jira Issue Key: ${BASH_REMATCH[1]}"
+            echo "JIRA_ISSUE_KEY=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+          else
+            echo "No Jira Issue Key found in commit message"
+            exit 1
+            fi
+      - name: Create data.json for Jira Update
+        if: success() && steps.extract.outcome == 'success'
+        run: |
+          echo '{ "transition": { "id": "11" }, "fields": { "10008": "Pass" } }' > data.json
+      - name: Update Jira
+        if: success() && steps.extract.outcome == 'success'
+        run: |
+          curl -D- -u ${{ secrets.JIRA_USERNAME }}:${{ secrets.JIRA_API_TOKEN }} 
+          -X POST --data @data.json 
+          -H "Content-Type: application/json" ${{ env.JIRA_BASE_URL }}/rest/api/2/issue/${{ steps.extract.outputs.JIRA_ISSUE_KEY }}/transitions

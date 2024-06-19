@@ -3,9 +3,12 @@ import { Box } from "@mui/material";
 import MyButton from "@/components/MyButton";
 import useRegister from "./hooks/useRegister";
 import FormInputText from "@/components/Form/FormInputText";
+import authApi from "@/utils/api/authApi";
 
-const RegisterForm = () => {
-  const [handleSubmit, isSubmitting, control] = useRegister();
+export type RegisterFormProps = typeof authApi.register;
+
+const RegisterForm = ({ auth }: { auth: RegisterFormProps }) => {
+  const [handleSubmit, isSubmitting, control] = useRegister(auth);
 
   return (
     <Box

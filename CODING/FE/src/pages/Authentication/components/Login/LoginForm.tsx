@@ -4,9 +4,12 @@ import MyButton from "@/components/MyButton";
 import useToggle from "@/hooks/useToggle";
 import useLogin from "./hooks/useLogin";
 import FormInputText from "@/components/Form/FormInputText";
+import authApi from "@/utils/api/authApi";
 
-const LoginForm = () => {
-  const [handleSubmit, isSubmitting, control] = useLogin();
+export type LoginFormProps = typeof authApi.login;
+
+const LoginForm = ({ auth }: { auth: LoginFormProps }) => {
+  const [handleSubmit, isSubmitting, control] = useLogin(auth);
 
   const [check, toggleCheck] = useToggle("persist", false);
 

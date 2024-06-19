@@ -13,10 +13,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.1.7
-      - name: Output content
-        run: ls
       - name: Move to the FE test directory
-        run: cd CODING/FE
+        run: cd /CODING/FE
       - name: Cache deps
         id: cache
         uses: actions/cache@v4.0.2

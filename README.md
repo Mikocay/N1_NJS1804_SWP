@@ -16,5 +16,10 @@
 - Create Epic & User Story: Duong
 - User Story Mapping: Duong
 - Report SRS: Duong, Bao
-- Code: 
-  + Login, Register: Bao
+- Code:
+  * Sprint 1: 
+    + Login, Register: Bao
+    + Create Staff, View Staff: Duong
+    + Create Treatment, View Treatment: Hoang
+    + Create Branch, View Branch: Quang
+  * Spring 2:

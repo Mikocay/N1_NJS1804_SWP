@@ -6,7 +6,7 @@ on:
       - cicd
 env:
   CACHE_KEY: node-deps
-  JIRA_BASE_URL: https://huynh-thong-duong-se183537.net
+  JIRA_BASE_URL: https://huynh-thong-duong-se183537.atlassian.net
   JIRA_PROJECT_KEY: N3NJS1804
 defaults:
   run:

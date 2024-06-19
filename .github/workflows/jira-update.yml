@@ -38,19 +38,23 @@ jobs:
         run: |
           commit_message=$(git log -1 --pretty=%B)
           echo "Commit message: $commit_message" 
-          if [[ "$commit_message" =~ (${{ env.JIRA_PROJECT_KEY }}-[0-9]+) ]]
+          if [[ "$commit_message" =~ (${{ env.JIRA_PROJECT_KEY }}-[0-9]+):(.*)$ ]]
           then
             echo "Jira Issue Key: ${BASH_REMATCH[1]}"
             echo "JIRA_ISSUE_KEY=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+            echo "JIRA_ISSUE_DESCRIPTION=${BASH_REMATCH[2]}" >> $GITHUB_OUTPUT
           else
             echo "No Jira Issue Key found in commit message"
             exit 1
             fi
-      - name: Create data.json for Jira Update
-        if: success() && steps.extract.outcome == 'success'
+      - name: Create data.json for Jira Update if success
+        continue-on-error: true
         run: |
-          echo '{ "transition": { "id": "11" }, "fields": { "10008": "Pass" } }' > data.json
+          echo '{ "transition": { "id": "11" }, "fields": { "customfield_10037": "Pass", "description": "${{ steps.extract.outputs.JIRA_ISSUE_DESCRIPTION }}" } }' > data.json
+      - name: Create data.json for Jira Update if failure
+        if: failure() && steps.extract.outcome != 'success'
+        run: |
+          echo '{ "transition": { "id": "11" }, "fields": { "issuetype": { "id": "10009" }, "customfield_10037": "Fail", "description": "${{ steps.extract.outputs.JIRA_ISSUE_DESCRIPTION }}" } }' > data.json
       - name: Update Jira
-        if: success() && steps.extract.outcome == 'success'
         run: |
           curl -D- -u ${{ secrets.JIRA_USERNAME }}:${{ secrets.JIRA_API_TOKEN }} -X POST --data @data.json -H "Content-Type: application/json" ${{ env.JIRA_BASE_URL }}/rest/api/2/issue/${{ steps.extract.outputs.JIRA_ISSUE_KEY }}/transitions

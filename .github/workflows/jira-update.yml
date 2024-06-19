@@ -35,6 +35,7 @@ jobs:
       - name: Extract Jira Issue Key from Commit Message
         id: extract
         run: |
+          commit_message=$(git log -1 --pretty=%B)
           echo "Commit message: $commit_message" 
           if [[ "$commit_message" =~ ([A-Z]+-[0-9]+) ]];
           then

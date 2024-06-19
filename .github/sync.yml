@@ -1,4 +1,4 @@
-baoh7204/swp391-debo-fe@testing:
+baoha7204/swp391-debo-fe@testing:
   - source: src/
     dest: CODING/FE/src/
   - source: README.md

@@ -14,7 +14,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.1.7
         with:
-          path: "CODING/FE"
+          sparse-checkout: |
+            CODING/FE
       - name: Output information
         run: ls
       - name: Cache deps

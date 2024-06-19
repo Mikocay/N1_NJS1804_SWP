@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - cicd
 env:
   CACHE_KEY: node-deps
   JIRA_BASE_URL: https://huynh-thong-duong-se183537.net

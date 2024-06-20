@@ -49,4 +49,4 @@ jobs:
             fi
       - name: Get edit issue metadata
         run: |
-          curl -D- -u ${{ secrets.JIRA_USERNAME }}:${{ secrets.JIRA_API_TOKEN }} -X GET -H "Content-Type: application/json" ${{ env.JIRA_BASE_URL }}/rest/api/2/issue/${{ steps.extract.outputs.JIRA_ISSUE_KEY }}/editmeta
+          curl -D- -u ${{ secrets.JIRA_USERNAME }}:${{ secrets.JIRA_API_TOKEN }} -X GET -H "Content-Type: application/json" ${{ env.JIRA_BASE_URL }}/rest/api/2/issue/${{ steps.extract.outputs.JIRA_ISSUE_KEY }}/transitions

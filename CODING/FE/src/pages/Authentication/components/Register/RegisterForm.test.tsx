@@ -28,6 +28,7 @@ describe("Register Form", () => {
     await userEvent.type(getByTestId("password"), passInput);
     await userEvent.type(getByTestId("confirmPassword"), passInput);
     fireEvent.click(getByTestId("register"));
+
     // Assert
     await waitFor(() => expect(screen.queryAllByRole("alert")).toHaveLength(0));
     expect(mockAuthApi.register).toHaveBeenCalledWith({
@@ -48,7 +49,7 @@ describe("Register Form", () => {
     const confirmPassErrorMsg = await findByText(
       "Confirm password is required"
     );
-    
+
     // Assert
     expect(emailErrorMsg).toBeInTheDocument();
     expect(phoneErrorMsg).toBeInTheDocument();

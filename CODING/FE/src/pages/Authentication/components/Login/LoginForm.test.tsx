@@ -64,6 +64,7 @@ describe("Login Form", () => {
     fireEvent.click(getByTestId("login"));
     const userErrorMsg = await findByText("Email/phone number is required");
     const passErrorMsg = await findByText("Password is required");
+    
     // Assert
     expect(userErrorMsg).toBeInTheDocument();
     expect(passErrorMsg).toBeInTheDocument();

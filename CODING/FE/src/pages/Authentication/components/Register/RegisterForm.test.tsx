@@ -9,6 +9,7 @@ const mockAuthApi = Object.assign({}, authApi);
 describe("Register Form", () => {
   beforeEach(() => {
     mockAuthApi.register = jest.fn(() => Promise.resolve({ success: true }));
+
     render(
       <BrowserRouter>
         <RegisterForm auth={mockAuthApi.register} />

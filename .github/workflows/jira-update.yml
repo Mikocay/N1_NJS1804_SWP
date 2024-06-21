@@ -45,7 +45,7 @@ jobs:
         run: |
           commit_message=$(git log -1 --pretty=%B)
           echo "Commit message: $commit_message" 
-          if [[ "$commit_message" =~ (${{ env.JIRA_PROJECT_KEY }}-[0-9]+):(" "*)@description(.*)@data(" "*)(.*)?$ ]]; then
+          if [[ "$commit_message" =~ (${{ env.JIRA_PROJECT_KEY }}-[0-9]+):(" "*)@description(.*)@data(.*)?$ ]]; then
             echo "Jira Issue Key: ${BASH_REMATCH[1]} ${BASH_REMATCH[2]} ${BASH_REMATCH[3]}"
             echo "JIRA_ISSUE_KEY=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
             echo "JIRA_ISSUE_DESCRIPTION=${BASH_REMATCH[2]}" >> $GITHUB_OUTPUT

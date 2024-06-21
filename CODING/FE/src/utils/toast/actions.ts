@@ -10,7 +10,6 @@ export const errorToastHandler = (res: any) => {
   if (res?.message) {
     return toastError(res.message);
   }
-
   let message = DEFAULT_ERROR;
   switch (res.status) {
     case HTTP_STATUS.BAD_REQUEST:

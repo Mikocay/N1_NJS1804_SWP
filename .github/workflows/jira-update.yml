@@ -34,12 +34,11 @@ jobs:
       - name: Test
         id: test
         run: npm run test
-      - name: Output information
-        run: ls
       - name: Zip coverage
-        uses: montudor/action-zip@v1
+        uses: vimtor/action-zip@v1.2
         with:
-          args: zip -qq -r coverage.zip coverage
+          files: coverage
+          dest: coverage.zip
       - name: Extract Jira Issue Key from Commit Message
         if: always()
         id: extract

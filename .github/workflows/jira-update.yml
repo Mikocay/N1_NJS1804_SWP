@@ -54,11 +54,11 @@ jobs:
               echo "JIRA_ISSUE_TEST_DATA=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
             else
               echo "TEST_DATA="false"" >> $GITHUB_OUTPUT
-            echo "JIRA_ISSUE_TEST_DATA=${BASH_REMATCH[3]}" >> $GITHUB_OUTPUT
+            fi
           else
             echo "No Jira Issue Key found in commit message"
             exit 1
-            fi
+          fi
       - name: Create json for Jira Update if success
         if: success() && steps.extract.outcome == 'success' && steps.test.outcome == 'success'
         run: |

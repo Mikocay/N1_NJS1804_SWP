@@ -34,6 +34,10 @@ jobs:
       - name: Test
         id: test
         run: npm run test
+      - name: Zip coverage
+        uses: montudor/action-zip@v1
+        with:
+          args: zip -qq -r coverage.zip coverage
       - name: Extract Jira Issue Key from Commit Message
         if: always()
         id: extract
@@ -52,7 +56,7 @@ jobs:
       - name: Create json for Jira Update if success
         if: success() && steps.extract.outcome == 'success' && steps.test.outcome == 'success'
         run: |
-          echo '{ "fields": { "customfield_10037": { "id": "10023" }, "description": "${{ steps.extract.outputs.JIRA_ISSUE_DESCRIPTION }}" }, "update": {"comment": [{"add": {"body": "Testcase passed"}}]} }' > data.json
+          echo '{ "fields": { "issuetype": { "id": "10015" }, "customfield_10037": { "id": "10023" }, "description": "${{ steps.extract.outputs.JIRA_ISSUE_DESCRIPTION }}" }, "update": {"comment": [{"add": {"body": "Testcase passed"}}]} }' > data.json
           echo '{ "transition": {"id": "31"} }' > data1.json
       - name: Create json for Jira Update if failure
         if: failure() && steps.extract.outcome == 'success' && steps.test.outcome != 'success'
@@ -67,3 +71,7 @@ jobs:
         if: always() && steps.extract.outcome == 'success'
         run: |
           curl -D- -u ${{ secrets.JIRA_USERNAME }}:${{ secrets.JIRA_API_TOKEN }} -X POST --data @data1.json -H "Content-Type: application/json" ${{ env.JIRA_BASE_URL }}/rest/api/2/issue/${{ steps.extract.outputs.JIRA_ISSUE_KEY }}/transitions
+      - name: Add coverage attachement Jira
+        if: always() && steps.extract.outcome == 'success'
+        run: |
+          curl -D- -u ${{ secrets.JIRA_USERNAME }}:${{ secrets.JIRA_API_TOKEN }} -X POST -H "X-Atlassian-Token: no-check" -F 'file=@"coverage.zip"' ${{ env.JIRA_BASE_URL }}/rest/api/2/issue/${{ steps.extract.outputs.JIRA_ISSUE_KEY }}/attachments

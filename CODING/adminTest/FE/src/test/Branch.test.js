@@ -1,28 +1,66 @@
-const { CreateBranchBody } = require('./CreateBranchBody');
+import React from 'react';
+import { render, fireEvent, waitFor, screen } from '@testing-library/react';
+import axios from '@/config/axios';
+import { API_ENDPOINTS } from '@/utils/api';
+import CreateBranchBody from './CreateBranchBody';
 
-describe('Test Create Branch Function', () => {
-    it('should return 403 if missing id, name, phone, email', () => {
-        const req = { body: {id: '', name: '', phone: '', email: ''} }; // Empty request body
-        const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
-    
-        CreateBranchBody(req, res);
-    
-        expect(res.status).toHaveBeenCalledWith(403);
-        expect(res.send).toHaveBeenCalledWith('Missing required fields: id, name, phone, email');
+jest.mock('@/config/axios');
+
+describe('CreateBranchBody', () => {
+  it('should fetch manager list and render form correctly', async () => {
+    const mockManagers = [
+      { id: '1', firstName: 'John', lastName: 'Doe' },
+      { id: '2', firstName: 'Jane', lastName: 'Smith' },
+    ];
+
+    axios.get.mockResolvedValueOnce({ data: { data: { list: mockManagers } } });
+
+    render(<CreateBranchBody />);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Branch ID')).toBeInTheDocument();
+      expect(screen.getByLabelText('Branch Name')).toBeInTheDocument();
+      expect(screen.getByLabelText('Manager')).toBeInTheDocument();
+      expect(screen.getByLabelText('Branch Address')).toBeInTheDocument();
+      expect(screen.getByLabelText('Branch Mobile')).toBeInTheDocument();
+      expect(screen.getByLabelText('Branch Mail')).toBeInTheDocument();
+      expect(screen.getByText('Create')).toBeInTheDocument();
     });
 
-    it('should return 404 if page have Error', () => {
-        const req = { body: { id: '123', name: 'Test Branch', phone: '1234567890', email: 'test@example.com' } };
-        const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
+    expect(axios.get).toHaveBeenCalledWith(API_ENDPOINTS.USERS.AVAILABLE_MANAGER);
+  });
 
-        // Mock the behavior of the CreateBranchBody function to throw an error
-        jest.spyOn(global.console, 'error').mockImplementation(() => {});
-        jest.spyOn(CreateBranchBody, 'handleSubmit').mockImplementedOnce(() => {
-            throw new Error('Some error occurred');
-        });
+  it('should submit the form correctly', async () => {
+    const mockManagers = [
+      { id: '1', firstName: 'John', lastName: 'Doe' },
+      { id: '2', firstName: 'Jane', lastName: 'Smith' },
+    ];
 
-        CreateBranchBody(req, res);
-        expect(res.status).toHaveBeenCalledWith(404);
-        expect(res.send).toHaveBeenCalledWith('Some error occurred');
+    axios.get.mockResolvedValueOnce({ data: { data: { list: mockManagers } } });
+    axios.post.mockResolvedValueOnce({ data: { success: true } });
+
+    const { getByLabelText, getByText } = render(<CreateBranchBody />);
+
+    await waitFor(() => {
+      fireEvent.change(getByLabelText('Branch ID'), { target: { value: '123' } });
+      fireEvent.change(getByLabelText('Branch Name'), { target: { value: 'Test Branch' } });
+      fireEvent.change(getByLabelText('Manager'), { target: { value: '1' } });
+      fireEvent.change(getByLabelText('Branch Address'), { target: { value: '123 Main St' } });
+      fireEvent.change(getByLabelText('Branch Mobile'), { target: { value: '555-1234' } });
+      fireEvent.change(getByLabelText('Branch Mail'), { target: { value: 'test@example.com' } });
     });
+
+    fireEvent.click(getByText('Create'));
+
+    await waitFor(() => {
+      expect(axios.post).toHaveBeenCalledWith(API_ENDPOINTS.BRANCHES.CREATE, {
+        id: '123',
+        name: 'Test Branch',
+        mngId: '1',
+        address: '123 Main St',
+        phone: '555-1234',
+        email: 'test@example.com',
+      });
+    });
+  });
 });

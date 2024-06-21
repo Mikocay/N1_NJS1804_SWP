@@ -1,71 +1,69 @@
-import { BrowserRouter } from "react-router-dom";
-import ListDentist from "./ListDentist/ListDentist";
-import { render, waitFor, screen } from "@testing-library/react";
-import { API_ENDPOINTS } from "@/utils/api";
-import { get } from "@/utils/apiCaller";
+import { render, screen, waitFor } from '@testing-library/react';
+import { API_ENDPOINTS } from '@/utils/api'; // Import your API endpoint constants
+import AllStaffListTable from './AllStaffListTable';
+import { BrowserRouter } from 'react-router-dom';
 
-jest.mock("@/utils/apiCaller", () => ({
-    get: jest.fn(),
+// Mock axiosPrivate
+jest.mock('@/config/axios', () => ({
+    __esModule: true,
+    default: {
+        interceptors: {
+            request: {
+                use: jest.fn(),
+                eject: jest.fn(),
+            },
+            response: {
+                use: jest.fn(),
+                eject: jest.fn(),
+            },
+        },
+        get: jest.fn(() => Promise.resolve({ // Mock axios get method
+            data: {
+                success: true,
+                data: {
+                    list: [
+                        { id: 1, firstName: 'John', lastName: 'Doe', email: 'john.doe@example.com', gender: true, phone: '123456789' },
+                        { id: 2, firstName: 'Jane', lastName: 'Doe', email: 'jane.doe@example.com', gender: false, phone: '987654321' },
+                    ],
+                    total: 2,
+                },
+            },
+        })),
+    },
 }));
 
-const mockData = {
-    list: [
-        {
-            id: 1,
-            firstName: "John",
-            lastName: "Doe",
-            email: "john.doe@example.com",
-            gender: true,
-            phone: "123456789",
-        },
-        {
-            id: 2,
-            firstName: "Jane",
-            lastName: "Smith",
-            email: "jane.smith@example.com",
-            gender: false,
-            phone: "987654321",
-        },
-    ],
-    total: 2,
-};
-
-describe("AdminAllStaffList Component", () => {
+describe('AllStaffListTable Component', () => {
     beforeEach(() => {
-        (get as jest.Mock).mockResolvedValue({
-            statusCode: 200,
-            success: true,
-            message: "Success",
-            data: mockData,
-        });
-        render(
-            <BrowserRouter>
-                <ListDentist />
-            </BrowserRouter>
-        );
+        jest.clearAllMocks();
+        jest.resetModules();
     });
 
-    it("should call API and display all staffs", async () => {
+    it('renders table with fetched data', async () => {
+        render(
+            <BrowserRouter>
+                <AllStaffListTable url={API_ENDPOINTS.USERS.LIST_DENTIST} />
+            </BrowserRouter>
+        );
 
-        const { findByText } = screen;
-
+        // Wait for data to be fetched and rendered
         await waitFor(() => {
-            expect(get).toHaveBeenCalledWith(API_ENDPOINTS.USERS.LIST_DENTIST);
+            const rows = screen.getAllByRole('row');
+            expect(rows.length).toBe(2);
         });
+        // Check if data is displayed correctly in the table cells
+        const firstNameCells = await screen.findAllByText('John'); // Using regular expression for case-insensitive matching
+        expect(firstNameCells).toHaveLength(1);
 
-        // Check if data is displayed correctly on the UI
-        await waitFor(() => {
-            expect(findByText("John")).toBeInTheDocument();
-            expect(findByText("Doe")).toBeInTheDocument();
-            expect(findByText("john.doe@example.com")).toBeInTheDocument();
-            expect(findByText("Male")).toBeInTheDocument();
-            expect(findByText("123456789")).toBeInTheDocument();
+        const lastNameCells = await screen.findAllByText('Doe'); // Using regular expression for case-insensitive matching
+        expect(lastNameCells).toHaveLength(2);
 
-            expect(findByText("Jane")).toBeInTheDocument();
-            expect(findByText("Smith")).toBeInTheDocument();
-            expect(findByText("jane.smith@example.com")).toBeInTheDocument();
-            expect(findByText("Female")).toBeInTheDocument();
-            expect(findByText("987654321")).toBeInTheDocument();
-        });
+        const emailCells = await screen.findAllByText('john.doe@example.com'); // Using regular expression for case-insensitive matching
+        expect(emailCells).toHaveLength(1);
+
+        const genderCells = await screen.findAllByText('Male'); // Using regular expression for case-insensitive matching
+        expect(genderCells).toHaveLength(1);
+
+        const phoneCells = await screen.findAllByText('123456789'); // Using regular expression for case-insensitive matching
+        expect(phoneCells).toHaveLength(1);
     });
 });

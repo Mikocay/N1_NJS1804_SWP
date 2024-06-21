@@ -1,6 +1,8 @@
-import { useLayoutEffect } from "react";
+// src/hooks/useAxiosPrivate.ts
 
-import { axiosPrivate } from "@/config/axios";
+import { useLayoutEffect } from "react";
+import axiosPrivate from "@/config/axios"; // Import the named export
+
 import useRefreshToken from "./useRefreshToken";
 import useAuth from "./useAuth";
 import { HTTP_STATUS } from "@/constant/core";
@@ -12,8 +14,8 @@ const useAxiosPrivate = () => {
   useLayoutEffect(() => {
     const requestIntercept = axiosPrivate.interceptors.request.use(
       (config) => {
-        if (!config.headers["Authorization"]) {
-          config.headers["Authorization"] = `Bearer ${auth?.accessToken}`;
+        if (!config.headers["Authorization"] && auth?.accessToken) {
+          config.headers["Authorization"] = `Bearer ${auth.accessToken}`;
         }
         return config;
       },

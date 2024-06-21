@@ -66,20 +66,20 @@ const MyTable = <T extends RowData>({ url, columns }: TableProps<T>) => {
               </TableRow>
             ))}
           </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25, { value: -1, label: "All" }]}
+                page={controller.page}
+                count={count}
+                rowsPerPage={controller.rowsPerPage}
+                onPageChange={handlePageChange}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                ActionsComponent={TablePaginationActions}
+              />
+            </TableRow>
+          </TableFooter>
         </Table>
-        <TableFooter>
-          <TableRow>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25, { value: -1, label: "All" }]}
-              page={controller.page}
-              count={count}
-              rowsPerPage={controller.rowsPerPage}
-              onPageChange={handlePageChange}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
-            />
-          </TableRow>
-        </TableFooter>
       </TableContainer>
     </Paper>
   );

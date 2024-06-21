@@ -49,7 +49,7 @@ jobs:
             echo "Jira Issue Key: ${BASH_REMATCH[1]} ${BASH_REMATCH[2]} ${BASH_REMATCH[3]}"
             echo "JIRA_ISSUE_KEY=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
             echo "JIRA_ISSUE_DESCRIPTION=${BASH_REMATCH[2]}" >> $GITHUB_OUTPUT
-            if [[ "${BASH_REMATCH[3]}" =~ [A-Za-z0-9]+ ]]; then
+            if [[ "${BASH_REMATCH[3]}" =~ ((?:[^/]*/)*)(.*) ]]; then
               echo "TEST_DATA="true"" >> $GITHUB_OUTPUT
               echo "JIRA_ISSUE_TEST_DATA=${BASH_REMATCH[0]}" >> $GITHUB_OUTPUT
             else

@@ -3,7 +3,7 @@ import { BrowserRouter } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import LoginForm from "./LoginForm";
 import authApi from "@/utils/api/authApi";
-import testData from "@/mocks/LoginForm.test.json";
+import testData from "@/mocks/LoginForm.json";
 
 const mockAuthApi = Object.assign({}, authApi);
 describe("Login Form", () => {

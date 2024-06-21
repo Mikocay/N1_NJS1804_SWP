@@ -73,6 +73,7 @@ describe("Register Form", () => {
       );
       fireEvent.click(getByTestId("register"));
       const errorMessages = expected.map((msg) => findByText(msg));
+
       // Assert
       for (const errorMsg of errorMessages) {
         expect(await errorMsg).toBeInTheDocument();

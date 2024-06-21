@@ -50,6 +50,7 @@ jobs:
             echo "JIRA_ISSUE_KEY=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
             echo "JIRA_ISSUE_DESCRIPTION=${BASH_REMATCH[2]}" >> $GITHUB_OUTPUT
             if [[ "${BASH_REMATCH[3]}" =~ [A-Za-z0-9]+ ]]; then
+              echo "${BASH_REMATCH[1]} ${BASH_REMATCH[2]} ${BASH_REMATCH[3]}"
               echo "TEST_DATA="true"" >> $GITHUB_OUTPUT
               echo "JIRA_ISSUE_TEST_DATA=${BASH_REMATCH[3]}" >> $GITHUB_OUTPUT
             else

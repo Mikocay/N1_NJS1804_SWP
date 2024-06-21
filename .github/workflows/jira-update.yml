@@ -37,8 +37,8 @@ jobs:
       - name: Zip coverage
         uses: vimtor/action-zip@v1.2
         with:
-          files: coverage
-          dest: coverage.zip
+          files: CODING/FE/coverage
+          dest: CODING/FE/coverage.zip
       - name: Extract Jira Issue Key from Commit Message
         if: always()
         id: extract

@@ -45,11 +45,12 @@ jobs:
         run: |
           commit_message=$(git log -1 --pretty=%B)
           echo "Commit message: $commit_message" 
-          if [[ "$commit_message" =~ (${{ env.JIRA_PROJECT_KEY }}-[0-9]+):(.*)$ ]]
-          then
-            echo "Jira Issue Key: ${BASH_REMATCH[1]}"
+          if [[ "$commit_message" =~ ^(${{ env.JIRA_PROJECT_KEY }}-[0-9]+):\s*@description(.*)(@test-data\s*(.*))?$ ]]; then
+            echo "Jira Issue Key: ${BASH_REMATCH[1]} ${BASH_REMATCH[2]} ${BASH_REMATCH[3]}"
             echo "JIRA_ISSUE_KEY=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
             echo "JIRA_ISSUE_DESCRIPTION=${BASH_REMATCH[2]}" >> $GITHUB_OUTPUT
+            echo "TEST_DATA="true"" >> $GITHUB_OUTPUT
+            echo "JIRA_ISSUE_TEST_DATA=${BASH_REMATCH[3]}" >> $GITHUB_OUTPUT
           else
             echo "No Jira Issue Key found in commit message"
             exit 1
@@ -76,3 +77,7 @@ jobs:
         if: always() && steps.extract.outcome == 'success'
         run: |
           curl -D- -u ${{ secrets.JIRA_USERNAME }}:${{ secrets.JIRA_API_TOKEN }} -X POST -H "X-Atlassian-Token: no-check" -F 'file=@"coverage.zip"' ${{ env.JIRA_BASE_URL }}/rest/api/2/issue/${{ steps.extract.outputs.JIRA_ISSUE_KEY }}/attachments
+      - name: Add coverage attachement Jira
+        if: always() && steps.extract.outcome == 'success' && steps.extract.outputs.TEST_DATA == 'true'
+        run: |
+          curl -D- -u ${{ secrets.JIRA_USERNAME }}:${{ secrets.JIRA_API_TOKEN }} -X POST -H "X-Atlassian-Token: no-check" -F 'file=@"${{ steps.extract.outputs.JIRA_ISSUE_TEST_DATA }}"' ${{ env.JIRA_BASE_URL }}/rest/api/2/issue/${{ steps.extract.outputs.JIRA_ISSUE_KEY }}/attachments

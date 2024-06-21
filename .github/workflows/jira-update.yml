@@ -58,7 +58,7 @@ jobs:
         if: failure() && steps.extract.outcome == 'success' && steps.test.outcome != 'success'
         run: |
           echo '{ "fields": { "issuetype": { "id": "10009" }, "customfield_10037": { "id": "10024" } }, "update": {"comment": [{"add": {"body": "Testcase failed"}}]} }' > data.json
-          echo "{ "transition": {"id": "41"} }" > data1.json
+          echo '{ "transition": {"id": "41"} }' > data1.json
       - name: Update data Jira
         if: always() && steps.extract.outcome == 'success'
         run: |

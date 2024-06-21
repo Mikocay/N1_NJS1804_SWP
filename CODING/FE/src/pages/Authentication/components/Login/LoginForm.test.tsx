@@ -46,7 +46,7 @@ describe("Login Form", () => {
     const passInput = "password";
 
     // Act
-    await userEvent.type(getByTestId("userr"), phoneInput);
+    await userEvent.type(getByTestId("user"), phoneInput);
     await userEvent.type(getByTestId("password"), passInput);
     fireEvent.click(getByTestId("login"));
     // Assert

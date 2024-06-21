@@ -4,6 +4,7 @@ on:
     branches:
       - main
       - cicd
+      - test/**
 env:
   CACHE_KEY: node-deps
   JIRA_BASE_URL: https://huynh-thong-duong-se183537.atlassian.net

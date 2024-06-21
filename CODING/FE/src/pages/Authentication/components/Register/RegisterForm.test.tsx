@@ -48,6 +48,7 @@ describe("Register Form", () => {
     const confirmPassErrorMsg = await findByText(
       "Confirm password is required"
     );
+    
     // Assert
     expect(emailErrorMsg).toBeInTheDocument();
     expect(phoneErrorMsg).toBeInTheDocument();

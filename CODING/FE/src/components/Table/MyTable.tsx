@@ -34,7 +34,7 @@ const MyTable = <T extends RowData>({ url, columns }: TableProps<T>) => {
             <TableRow>
               {columns.map((column) => (
                 <TableCell
-                  key={column.id}
+                  key={column.id as Key}
                   align={column.align}
                   style={{ minWidth: column.minWidth }}
                 >
@@ -47,9 +47,11 @@ const MyTable = <T extends RowData>({ url, columns }: TableProps<T>) => {
             {list.map((row) => (
               <TableRow hover tabIndex={-1} key={row.id}>
                 {columns.map((column) => {
+
                   const value = row[column.id] as string & Date;
                   const formattedValue = column.format
                     ? column.format(value)
+
                     : value;
                   return (
                     <TableCell key={column.id as Key} align={column.align}>

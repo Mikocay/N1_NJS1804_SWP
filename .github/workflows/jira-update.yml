@@ -1,0 +1,88 @@
+name: Update test case status to Jira
+on:
+  push:
+    branches:
+      - main
+      - cicd
+      - test/**
+env:
+  CACHE_KEY: node-deps
+  JIRA_BASE_URL: https://huynh-thong-duong-se183537.atlassian.net
+  JIRA_PROJECT_KEY: N3NJS1804
+defaults:
+  run:
+    working-directory: CODING/FE
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.7
+        with:
+          sparse-checkout: CODING/FE
+          sparse-checkout-cone-mode: false
+      - name: Output information
+        run: ls
+      - name: Cache deps
+        id: cache
+        uses: actions/cache@v4.0.2
+        with:
+          key: node_modules
+          path: ${{ env.CACHE_KEY }}-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Test
+        id: test
+        run: npm run test
+      - name: Zip coverage
+        uses: vimtor/action-zip@v1.2
+        with:
+          files: CODING/FE/coverage
+          dest: CODING/FE/coverage.zip
+      - name: Extract Jira Issue Key from Commit Message
+        if: always()
+        id: extract
+        run: |
+          commit_message=$(git log -1 --pretty=%B)
+          echo "Commit message: $commit_message" 
+          if [[ "$commit_message" =~ (${{ env.JIRA_PROJECT_KEY }}-[0-9]+):" "*@description(.*)@data" "*(.*)?$ ]]; then
+            echo "Jira Issue Key: ${BASH_REMATCH[1]} ${BASH_REMATCH[2]} ${BASH_REMATCH[3]}"
+            echo "JIRA_ISSUE_KEY=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+            echo "JIRA_ISSUE_DESCRIPTION=${BASH_REMATCH[2]}" >> $GITHUB_OUTPUT
+            if [[ "${BASH_REMATCH[3]}" =~ ^([a-zA-Z_\-\s0-9/.]+)\.(txt|gif|pdf|doc|docx|xls|xlsx|js|json|csv)$ ]]; then
+              echo "TEST_DATA="true"" >> $GITHUB_OUTPUT
+              echo "JIRA_ISSUE_TEST_DATA=${BASH_REMATCH[0]}" >> $GITHUB_OUTPUT
+            else
+              echo "TEST_DATA="false"" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "No Jira Issue Key found in commit message"
+            exit 1
+          fi
+      - name: Create json for Jira Update if success
+        if: success() && steps.extract.outcome == 'success' && steps.test.outcome == 'success'
+        run: |
+          echo '{ "fields": { "issuetype": { "id": "10015" }, "customfield_10037": { "id": "10023" }, "description": "${{ steps.extract.outputs.JIRA_ISSUE_DESCRIPTION }}" }, "update": {"comment": [{"add": {"body": "Testcase passed"}}]} }' > data.json
+          echo '{ "transition": {"id": "31"} }' > data1.json
+      - name: Create json for Jira Update if failure
+        if: failure() && steps.extract.outcome == 'success' && steps.test.outcome != 'success'
+        run: |
+          echo '{ "fields": { "issuetype": { "id": "10009" }, "customfield_10037": { "id": "10024" } }, "update": {"comment": [{"add": {"body": "Testcase failed"}}]} }' > data.json
+          echo '{ "transition": {"id": "41"} }' > data1.json
+      - name: Update data Jira
+        if: always() && steps.extract.outcome == 'success'
+        run: |
+          curl -D- -u ${{ secrets.JIRA_USERNAME }}:${{ secrets.JIRA_API_TOKEN }} -X PUT --data @data.json -H "Content-Type: application/json" ${{ env.JIRA_BASE_URL }}/rest/api/2/issue/${{ steps.extract.outputs.JIRA_ISSUE_KEY }}
+      - name: Update transition Jira
+        if: always() && steps.extract.outcome == 'success'
+        run: |
+          curl -D- -u ${{ secrets.JIRA_USERNAME }}:${{ secrets.JIRA_API_TOKEN }} -X POST --data @data1.json -H "Content-Type: application/json" ${{ env.JIRA_BASE_URL }}/rest/api/2/issue/${{ steps.extract.outputs.JIRA_ISSUE_KEY }}/transitions
+      - name: Add coverage attachement Jira
+        if: always() && steps.extract.outcome == 'success'
+        run: |
+          curl -D- -u ${{ secrets.JIRA_USERNAME }}:${{ secrets.JIRA_API_TOKEN }} -X POST -H "X-Atlassian-Token: no-check" -F 'file=@"coverage.zip"' ${{ env.JIRA_BASE_URL }}/rest/api/2/issue/${{ steps.extract.outputs.JIRA_ISSUE_KEY }}/attachments
+      - name: Add test data attachement Jira
+        if: always() && steps.extract.outcome == 'success' && steps.extract.outputs.TEST_DATA == 'true'
+        run: |
+          curl -D- -u ${{ secrets.JIRA_USERNAME }}:${{ secrets.JIRA_API_TOKEN }} -X POST -H "X-Atlassian-Token: no-check" -F 'file=@"${{ steps.extract.outputs.JIRA_ISSUE_TEST_DATA }}"' ${{ env.JIRA_BASE_URL }}/rest/api/2/issue/${{ steps.extract.outputs.JIRA_ISSUE_KEY }}/attachments

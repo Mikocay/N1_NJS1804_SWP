@@ -22,7 +22,7 @@
 ## User stories for each sprint
 | Sprint  | User stories |
 | ---| --- |
-| 1  | Login, Register, Create Staff, View Staff, Create Treatment, View Treatment, Create Branch, View Branch  |
+| 1  | US01, US02, US10, US09, US13, US14, US19, US20  |
 | 2  | ...  |
 
 ## Division
@@ -34,7 +34,7 @@
   - Sprint 1
     | Assignee  | User stories |
     | ---| --- |
-    | Bao  | Login, Register  |
-    | Duong | Create Staff, View Staff  |
-    | Hoang | Create Branch, View Branch  |
-    | Quang | Create Treatment, View Treatment |
+    | Bao  | US01, US02  |
+    | Duong | US09, US10  |
+    | Hoang | US13, US14  |
+    | Quang | US19, US20 |

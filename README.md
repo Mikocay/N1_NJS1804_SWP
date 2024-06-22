@@ -36,5 +36,5 @@
     | ---| --- |
     | Bao  | Login, Register  |
     | Duong | Create Staff, View Staff  |
-    | Hoang | Create Treatment, View Treatment  |
-    | Quang | Create Branch, View Branch  |
+    | Hoang | Create Branch, View Branch  |
+    | Quang | Create Treatment, View Treatment |

@@ -11,22 +11,30 @@ export const errorToastHandler = (res: any) => {
     return toastError(res.message);
   }
 
-  let message = DEFAULT_ERROR;
-  switch (res.status) {
-    case HTTP_STATUS.BAD_REQUEST:
-      message = "No input received";
-      break;
-    case HTTP_STATUS.UNAUTHORIZED:
-      message = "You are not authorized to access this";
-      break;
-    case HTTP_STATUS.FORBIDDEN:
-      message = "Access has been denied";
-      break;
-    case HTTP_STATUS.NOT_FOUND:
-      message = "Resource is not found";
-      break;
-    case HTTP_STATUS.INTERNAL_SERVER_ERROR:
-      message = "Unexpected server error";
+  // Ensure res and res.status are defined before proceeding
+  if (res && res.status) {
+    let message = DEFAULT_ERROR;
+    switch (res.status) {
+      case HTTP_STATUS.BAD_REQUEST:
+        message = "No input received";
+        break;
+      case HTTP_STATUS.UNAUTHORIZED:
+        message = "You are not authorized to access this";
+        break;
+      case HTTP_STATUS.FORBIDDEN:
+        message = "Access has been denied";
+        break;
+      case HTTP_STATUS.NOT_FOUND:
+        message = "Resource is not found";
+        break;
+      case HTTP_STATUS.INTERNAL_SERVER_ERROR:
+        message = "Unexpected server error";
+        break;
+      default:
+        message = DEFAULT_ERROR;
+    }
+    return toastError(message);
+  } else {
+    return toastError(DEFAULT_ERROR);
   }
-  toastError(message);
 };

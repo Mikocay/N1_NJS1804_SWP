@@ -15,11 +15,10 @@ import LinkRouter from "@/components/LinkRouter";
 import useTableControl from "@/hooks/useControlTable";
 import useFetchTableList from "@/hooks/useFetchTableList";
 import { TableProps } from "./types/core";
-import { formatDateSlotString } from "@/utils/helper";
 
 type RowData = {
   id: Key;
-  timeSlot: number;
+  timeSlot?: number;
 };
 
 const MyTable = <T extends RowData>({ url, columns }: TableProps<T>) => {
@@ -48,11 +47,11 @@ const MyTable = <T extends RowData>({ url, columns }: TableProps<T>) => {
             {list.map((row) => (
               <TableRow hover tabIndex={-1} key={row.id}>
                 {columns.map((column) => {
-                  const value = row[column.id];
-                  const formattedValue = column.isDate
-                    ? formatDateSlotString(row.timeSlot, value as Date)
-                    : column.format
-                    ? column.format(value as string)
+
+                  const value = row[column.id] as string & Date;
+                  const formattedValue = column.format
+                    ? column.format(value)
+
                     : value;
                   return (
                     <TableCell key={column.id as Key} align={column.align}>
@@ -69,20 +68,20 @@ const MyTable = <T extends RowData>({ url, columns }: TableProps<T>) => {
               </TableRow>
             ))}
           </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25, { value: -1, label: "All" }]}
+                page={controller.page}
+                count={count}
+                rowsPerPage={controller.rowsPerPage}
+                onPageChange={handlePageChange}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                ActionsComponent={TablePaginationActions}
+              />
+            </TableRow>
+          </TableFooter>
         </Table>
-        <TableFooter>
-          <TableRow>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25, { value: -1, label: "All" }]}
-              page={controller.page}
-              count={count}
-              rowsPerPage={controller.rowsPerPage}
-              onPageChange={handlePageChange}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
-            />
-          </TableRow>
-        </TableFooter>
       </TableContainer>
     </Paper>
   );

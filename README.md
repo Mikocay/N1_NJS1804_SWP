@@ -28,6 +28,6 @@ Division
   * Sprint 1: 
     + Login, Register: Bao
     + Create Staff, View Staff: Duong
-    + Create Treatment, View Treatment: Hoang
-    + Create Branch, View Branch: Quang
+    + Create Branch, View Branch: Hoàng
+    + Create Treatment, View Treatment: Quang
   * Sprint 2:

@@ -1,20 +1,32 @@
-﻿# N3_NJS1804_SWP
+Topic: Dental Booking
 
-// Topic: Dental Booking
+Subject Conetent: Automatic dental appointment booking, payment upon appointment booking (except for medical appointment booking)
 
-// Subject Conetent: Automatic dental appointment booking, payment upon appointment booking (except for medical appointment booking)
+Epic:
 
-// Epic:
-- Manage Information (CRUD)
-- Authentication
-- Online Payment
+Authentication
+Appointment Management
+User Management
+Branch Management
+Employee Management
+Treatment Management
+Reporting and Analytics
+Applied Technology:
 
-// Applied Technology:
-- AWS
+FE: React + Typescript
+BE: .NET
+Database: SQL Server
+Others: AWS
+Division
 
-// Division
-- Create Epic & User Story: Duong
-- User Story Mapping: Duong
-- Report SRS: Duong, Bao
-- Code: 
-  + Login, Register: Bao
+Create Epic & User Story: Duong
+User Story Mapping: Duong
+Report SRS: Duong, Bao
+Github actions for sync with FE repo and Jira automation (update issue based on test result): Bao
+Code:
+Sprint 1:
+Login, Register: Bao
+Create Staff, View Staff: Duong
+Create Treatment, View Treatment: Hoang
+Create Branch, View Branch: Quang
+Sprint 2:

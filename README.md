@@ -36,5 +36,5 @@
     | ---| --- |
     | Bao  | US01, US02  |
     | Duong | US09, US10  |
-    | Hoang | US13, US14  |
+    | Hoang | US13, US17  |
     | Quang | US19, US20 |

@@ -36,5 +36,5 @@
     | ---| --- |
     | Bao  | Login, Register  |
     | Duong | Create Staff, View Staff  |
-    | Hoang | UC16, UC17  |
+    | Hoang | UC13, UC14  |
     | Quang | Create Treatment, View Treatment |

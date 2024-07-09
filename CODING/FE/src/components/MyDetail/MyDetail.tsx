@@ -1,31 +1,33 @@
 import axios from "@/config/axios";
-import { Box, Grid, Paper, Typography } from "@mui/material";
-import { Key, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Box, Button, Grid, Paper, Typography } from "@mui/material";
+import React, { Key, useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { ListColumn } from "../Table/types/core";
 
 type RowData = {
     id: Key;
 };
 
-export type ListColumn<T> = {
-    id: Extract<keyof T, Key>;
-    label: string;
-    minWidth?: number;
-    align?: "right";
-    isDetail?: boolean;
-    isCategory?: boolean;
-    format?: ((value: Date) => string) | ((value: string) => string) | ((value: number) => string);
-};
-
-export type TableProps<T> = {
+type TableProps<T> = {
     url: string;
     columns: readonly ListColumn<T>[];
+    deleteBut?: boolean;
+    updateBut?: boolean;
+    assignBut?: boolean;
 };
 
-const MyDetail = <T extends RowData>({ url, columns }: TableProps<T>) => {
+const MyDetail = <T extends RowData>({ url, columns, deleteBut, updateBut, assignBut }: TableProps<T>) => {
 
     const { id } = useParams<{ id: string }>();
-    const [state, setState] = useState() // Add type annotation to 'state' variable
+    const [state, setState] = useState();
+    const navigate = useNavigate();
+    // Add type annotation to 'state' variable
 
     const getOneCourse = async (id: string) => { // Add type annotation to 'id' parameter
         const res = await axios.get(`${url}/${id}`);
@@ -39,7 +41,28 @@ const MyDetail = <T extends RowData>({ url, columns }: TableProps<T>) => {
         if (id) getOneCourse(id);
     }, [id]);
 
-    console.log(state);
+    const [open, setOpen] = React.useState(false);
+    const [delCourse, setDelCourse] = React.useState<Key | null>(null);
+
+    const handleClickOpen = (id: string) => {
+        setOpen(true);
+        setDelCourse(id);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleDelete = async (id: string) => {
+        const res = await axios.delete(`${url}/${id}`);
+        if (res.status === 200) {
+            toast.success("Deleted Successfully");
+            navigate(`/admin/${url}`);
+        } else {
+            toast.error("Delete: Error!");
+        }
+        handleClose();
+    }
 
     return (
         <Box>
@@ -68,7 +91,75 @@ const MyDetail = <T extends RowData>({ url, columns }: TableProps<T>) => {
                     })}
                 </Grid>
             </Paper >
-
+            <Box sx={{ pt: 4 }}>
+                {updateBut && (
+                    <Link to={`update`}>
+                        <Button
+                            sx={{
+                                mr: 2,
+                                backgroundColor: (theme) => theme.palette.primary.main,
+                                color: (theme) => theme.palette.primary.contrastText,
+                                ":hover": {
+                                    backgroundColor: (theme) => theme.palette.primary.dark,
+                                }
+                            }}
+                        >
+                            Edit
+                        </Button>
+                    </Link>
+                )}
+                {deleteBut && (
+                    <Button
+                        onClick={() => handleClickOpen(id as string)}
+                        sx={{
+                            backgroundColor: (theme) => theme.palette.error.main,
+                            color: (theme) => theme.palette.error.contrastText,
+                            ":hover": {
+                                backgroundColor: (theme) => theme.palette.error.dark,
+                            }
+                        }}
+                    >
+                        Delete
+                    </Button>
+                )}
+                {assignBut && (
+                    <Link to={`assign`}>
+                        <Button
+                            onClick={() => handleClickOpen(id as string)}
+                            sx={{
+                                backgroundColor: '#49CC90',
+                                color: (theme) => theme.palette.error.contrastText,
+                                ":hover": {
+                                    backgroundColor: '#2F9E6E',
+                                }
+                            }}
+                        >
+                            ASSIGN
+                        </Button>
+                    </Link>
+                )}
+            </Box>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    {"Do you want to delete?"}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Are you sure that you want to delete?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}>No</Button>
+                    <Button onClick={() => handleDelete(delCourse as string)} autoFocus>
+                        Yes
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 }

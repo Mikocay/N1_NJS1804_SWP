@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { ProgressContext } from "../Booking/progress.context";
 import {
+  Box,
   Button,
   Card,
   CardActionArea,
@@ -10,17 +11,21 @@ import {
   Typography,
 } from "@mui/material";
 import ToothIcon from "@/assets/ToothIcon";
+import { formatVnMoney } from "@/utils/helper";
 
 export type TreatmentCardProps = {
   id: number;
-  category: number;
+  categoryName: string;
   name: string;
   description: string;
-  price: number | null;
+  price: number;
+  numOfAppointment: number;
+  ruleName: string;
 };
 
 const TreatmentCard = (props: TreatmentCardProps) => {
-  const { category, description, price, name } = props;
+  const { categoryName, description, price, name, numOfAppointment, ruleName } =
+    props;
   const { handleDoneIncrement, setData } = useContext(ProgressContext);
 
   const handleClick = () => {
@@ -50,11 +55,27 @@ const TreatmentCard = (props: TreatmentCardProps) => {
               </Typography>
             </Grid>
           </Grid>
-          <Typography variant="body1" color="text.secondary">
-            {category === 1 ? "Medical" : "Cosmetic"}
-          </Typography>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Typography variant="body1" color="text.secondary">
+              {categoryName}
+            </Typography>
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{ textAlign: "right" }}
+            >
+              Frequency: {ruleName}
+            </Typography>
+          </Box>
           <Typography variant="body2" color="text.secondary">
             {description}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {numOfAppointment > 1 ? "s" : null} required
           </Typography>
         </CardContent>
       </CardActionArea>
@@ -80,12 +101,7 @@ const TreatmentCard = (props: TreatmentCardProps) => {
           </Grid>
           <Grid item>
             <Typography variant="body1" color="primary.main" fontWeight="700">
-              {price
-                ? price.toLocaleString("it-IT", {
-                    style: "currency",
-                    currency: "VND",
-                  })
-                : "Free"}
+              {price ? formatVnMoney(price) : "Free"}
             </Typography>
           </Grid>
         </Grid>

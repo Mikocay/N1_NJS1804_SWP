@@ -4,8 +4,12 @@ export type ListColumn<T> = {
   minWidth?: number;
   align?: "right";
   isDetail?: boolean;
+  isPatientDetail?: boolean;
   isDate?: boolean;
-  format?: (value: string | number) => string;
+  isDateOnly?: boolean;
+  isStatus?: boolean;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  format?: Function;
 };
 
 export type TableProps<T> = {

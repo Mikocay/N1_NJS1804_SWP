@@ -13,7 +13,7 @@ export type AppointmentListData = {
 
 const columns: readonly ListColumn<AppointmentListData>[] = [
   { id: "name", label: "Name", isDetail: true, minWidth: 170 },
-  { id: "status", label: "Status", minWidth: 100 },
+  { id: "status", label: "Status", minWidth: 100, isStatus: true },
   { id: "treatment", label: "Treatment", minWidth: 170 },
   {
     id: "dentist",

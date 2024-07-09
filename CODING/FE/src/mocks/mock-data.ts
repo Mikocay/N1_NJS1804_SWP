@@ -300,6 +300,50 @@ const PendingAppointment = {
   status: "Pending",
 };
 
+const User = {
+  id: "1",
+  username: "baoha7204",
+  email: "abc@gmail.com",
+  firstName: null,
+  lastName: null,
+  gender: null,
+  phone: "0762953411",
+  address: null,
+  dateOfBirthday: new Date(2004, 1, 7),
+  medRec: null,
+  avt: null,
+};
+
+const DentistPatientList = [
+  {
+    id: "01",
+    username: "baoha3604",
+    email: "baoha3604@gmail.com",
+    phone: "0762953411",
+    timeSlot: 7,
+    nextAppointment: new Date(2024, 7, 10),
+    lastAppointment: new Date(2024, 6, 10),
+  },
+  {
+    id: "02",
+    username: "david an",
+    email: "johndoe@gmail.com",
+    phone: "0762953411",
+    timeSlot: 7,
+    nextAppointment: null,
+    lastAppointment: new Date(2024, 7, 4),
+  },
+  {
+    id: "03",
+    username: "james bond",
+    email: "wow@gmail.com",
+    phone: "0762953411",
+    timeSlot: 7,
+    nextAppointment: new Date(2024, 7, 11),
+    lastAppointment: new Date(2024, 6, 11),
+  },
+];
+
 export {
   CalendarPatientEvents,
   AppointmentPatientLists,
@@ -308,4 +352,6 @@ export {
   Dentists,
   Slots,
   PendingAppointment,
+  User,
+  DentistPatientList,
 };

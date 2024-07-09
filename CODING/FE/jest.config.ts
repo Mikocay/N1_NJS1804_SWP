@@ -34,9 +34,9 @@ const Config: Config.InitialOptions = {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
-  verbose: true,
-  collectCoverage: true,
-  collectCoverageFrom: ["<rootDir>/src/**/*.ts"],
+  // verbose: true,
+  // collectCoverage: true,
+  // collectCoverageFrom: ["<rootDir>/src/**/*.ts"],
 };
 
 export default Config;

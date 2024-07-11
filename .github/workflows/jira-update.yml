@@ -2,8 +2,6 @@ name: Update test case status to Jira
 on:
   push:
     branches:
-      - main
-      - cicd
       - test/**
 env:
   CACHE_KEY: node-deps

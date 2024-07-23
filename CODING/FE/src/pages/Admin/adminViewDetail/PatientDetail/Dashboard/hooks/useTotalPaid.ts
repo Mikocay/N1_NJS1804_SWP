@@ -2,8 +2,8 @@ import { useContext, useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { UserContext } from "@/pages/User/user.context";
 import patientDashboardApi from "@/utils/api/dashboardApi/patient";
-import { errorToastHandler } from "@/utils/toast/actions";
 import { formatNumericMonthToAbbreviated } from "@/utils/helper";
+import { useParams } from "react-router-dom";
 
 export type UsageData = { month: string } & Record<number, number>;
 
@@ -17,6 +17,7 @@ export type CostUsageType = {
 const useTotalPaid = () => {
   const { user, isLoading: isUserLoading } = useContext(UserContext);
   const [isLoading, setIsLoading] = useState(false);
+  const {id} = useParams<{id: string}>();
   const [data, setData] = useState<CostUsageType>(() => {
     const dataset: UsageData[] = [];
     for (let i = 1; i <= 12; i++) {
@@ -36,7 +37,7 @@ const useTotalPaid = () => {
     setIsLoading(true);
     const abortController = new AbortController();
 
-    if (!user?.id || isUserLoading) {
+    if (!user?.id || isUserLoading || id === undefined) {
       setIsLoading(false);
       return;
     }
@@ -44,13 +45,13 @@ const useTotalPaid = () => {
     const fetchRemote = async () => {
       try {
         const response = await patientDashboardApi.getTotalPaid(
-          user.id,
+          id,
           abortController.signal
         );
 
         const result = response.data;
         if (!result.success) {
-          errorToastHandler(result);
+          console.log(result);
           return;
         }
 

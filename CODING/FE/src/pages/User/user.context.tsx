@@ -10,8 +10,8 @@ import { decodeToken } from "react-jwt";
 import useAuth from "@/hooks/useAuth";
 import { Token } from "@/types/core";
 import userApi from "@/utils/api/userApi";
-import { errorToastHandler } from "@/utils/toast/actions";
 import { MetadataFile } from "@/components/FilePicker/types/core";
+import { toastWarning } from "@/utils/toast";
 
 type UserType = {
   id: string;
@@ -71,13 +71,18 @@ const UserProvider = ({ children }: PropsWithChildren) => {
         );
         const data = res.data;
         if (!res.success || !data) {
-          errorToastHandler(res);
+          console.log(res);
           return;
         }
+
+        if (!data.firstName || !data.lastName || !data.username) {
+          toastWarning("Please update your profile (first name, last name, username)!");
+        }
+
         setUser(res.data);
       } catch (error) {
         if (error.name !== "CanceledError") {
-          errorToastHandler(error.response);
+          console.log(error.response);
         }
         setUser(null);
       } finally {

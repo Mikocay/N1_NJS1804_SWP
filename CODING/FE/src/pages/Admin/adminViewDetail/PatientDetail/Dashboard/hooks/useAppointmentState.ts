@@ -1,30 +1,33 @@
 import { UserContext } from "@/pages/User/user.context";
 import patientDashboardApi from "@/utils/api/dashboardApi/patient";
-import { errorToastHandler } from "@/utils/toast/actions";
 import { PieValueType } from "@mui/x-charts";
 import { useContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 const useAppointmentState = () => {
   const { user, isLoading } = useContext(UserContext);
-  const [data, setData] = useState<PieValueType[] | null>(null);
+  const [data, setData] = useState<PieValueType[] | null>(null);  
 
+  const {id} = useParams<{id: string}>();
+  console.log(id);
+  
   useEffect(() => {
     const abortController = new AbortController();
 
-    if (!user?.id || isLoading) {
+    if (!user?.id || isLoading || id === undefined) {
       return;
     }
 
     const fetchRemote = async () => {
       try {
         const response = await patientDashboardApi.getAppointmentState(
-          user.id,
+          id,
           abortController.signal
         );
 
         const result = response.data;
         if (!result.success) {
-          errorToastHandler(result);
+          console.log(result);
           return;
         }
 
@@ -37,6 +40,7 @@ const useAppointmentState = () => {
         setData(data);
       } catch (error) {
         if (error.name !== "CanceledError") {
+          // errorToastHandler(error.response);
           console.log(error.response);
         }
         setData(null);
